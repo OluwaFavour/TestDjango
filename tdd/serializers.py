@@ -7,14 +7,15 @@ from .models import Book
 
 
 class SignupSerializer(serializers.ModelSerializer):
-    password_confirm = serializers.CharField(style={"input_type": "password"})
+    password_confirm = serializers.CharField(
+        style={"input_type": "password"}, write_only=True
+    )
 
     class Meta:
         model = User
         fields = ("id", "username", "email", "password", "password_confirm")
         extra_kwargs = {
             "password": {"write_only": True},
-            "password_confirm": {"write_only": True},
             "id": {"read_only": True},
             "email": {
                 "required": True,
@@ -49,20 +50,8 @@ class SignupSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        user = User.objects.create_user(
-            username=validated_data["username"],
-            email=validated_data["email"],
-            password=validated_data["password"],
-        )
+        user = User.objects.create_user(**validated_data)
         return user
-
-
-class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    password = serializers.CharField(style={"input_type": "password"}, write_only=True)
-
-    def validate(self, data):
-        return data
 
 
 class UserSerializer(serializers.ModelSerializer):

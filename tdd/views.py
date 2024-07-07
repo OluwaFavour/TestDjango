@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.serializers import Serializer
 
 from .models import User, Book
-from .serializers import SignupSerializer, LoginSerializer, BookSerializer
+from .serializers import SignupSerializer, BookSerializer
 
 
 class CustomSerializerErrorResponse:
@@ -38,7 +38,6 @@ class SignupView(CreateAPIView):
 
 
 class LoginView(KnoxLoginView):
-    serializer_class = LoginSerializer
     authentication_classes = (BasicAuthentication,)
 
 
