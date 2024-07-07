@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "tdd",
     "rest_framework",
     "knox",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -70,12 +71,20 @@ TEMPLATES = [
     },
 ]
 
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Test API",
+    "DESCRIPTION": "Test description",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+}
+
 WSGI_APPLICATION = "testDjango.wsgi.application"
 
 # REST_FRAMEWORK
 # https://www.django-rest-framework.org/api-guide/settings/
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ("knox.auth.TokenAuthentication",),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 # Database

@@ -4,14 +4,37 @@ from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.serializers import Serializer
 
 from .models import User, Book
 from .serializers import SignupSerializer, LoginSerializer, BookSerializer
 
 
+class CustomSerializerErrorResponse:
+    def __init__(self, serializer: Serializer):
+        self.serializer = serializer
+
+    def format(self):
+        formatted_errors = []
+        for field, errors in self.serializer.errors.items():
+            for error in errors:
+                formatted_errors.append({"field": field, "message": error})
+        return formatted_errors
+
+    @property
+    def response(self):
+        return Response({"errors": self.format()}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class SignupView(CreateAPIView):
     queryset = User.objects.all()
     serializer_class = SignupSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid(raise_exception=False):
+            return super().create(request, *args, **kwargs)
+        return CustomSerializerErrorResponse(serializer).response
 
 
 class LoginView(KnoxLoginView):

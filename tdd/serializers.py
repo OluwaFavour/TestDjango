@@ -16,6 +16,10 @@ class SignupSerializer(serializers.ModelSerializer):
             "password": {"write_only": True},
             "password_confirm": {"write_only": True},
             "id": {"read_only": True},
+            "email": {
+                "required": True,
+                "error_messages": {"required": "Email is required."},
+            },
         }
 
     def validate_username(self, value):
@@ -24,11 +28,15 @@ class SignupSerializer(serializers.ModelSerializer):
         return value
 
     def validate_email(self, value):
+        if not value:
+            raise serializers.ValidationError("Email is required.")
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError("User with this email already exists.")
         return value
 
     def validate_password(self, value):
+        if not value:
+            raise serializers.ValidationError("Password is required.")
         try:
             validate_password(value)
         except DjangoValidationError as e:
